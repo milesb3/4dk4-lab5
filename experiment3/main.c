@@ -38,13 +38,37 @@ int main(void) {
 
         /* Initialize simulation_run variables */
         data.blip_counter = 0;
-        data.arrival_count = 0;
+        data.token_arrival_count = 0;
+        data.packet_arrival_count = 0;
+        data.number_of_tokens_rejected = 0;
         data.number_of_packets_lost = 0;
         data.number_of_packets_transmitted = 0;
         data.random_seed = random_seed;
 
         /* Initialize token bucket controller */
-        data.token_bucket_controller = (Token_Bucket_Controller_Ptr) malloc(sizeof(Token_Bucket_Controller));
+        data.token_bucket_controller = (Token_Bucket_Controller_Ptr) xmalloc(sizeof(Token_Bucket_Controller));
+        data.token_bucket_controller->token_bucket = fifoqueue_new();
+        data.token_bucket_controller->data_bucket = fifoqueue_new();
+
+        /* Schedule initial token and packet arrivals*/
+        schedule_token_arrival_event(simulation_run, 
+            simulation_run_get_time(simulation_run) + T);
+        schedule_packet_arrival_event(simulation_run,
+            simulation_run_get_time(simulation_run) + exponential_generator((double) 1/PACKET_ARRIVAL_RATE));
         
+        /* Execute events until we are finished. */
+        while(data.number_of_packets_transmitted < RUNLENGTH) {
+            simulation_run_execute_event(simulation_run);
+        }
+
+        /* Output results */
+        output_results(simulation_run, output_csv);
+
+        /* Clean up memory. */
+        cleanup(simulation_run);
     }
+
+    //Close output csv file before finishing simulation
+    fclose(output_csv); 
+    return 0;
 }

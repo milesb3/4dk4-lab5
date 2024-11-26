@@ -24,6 +24,7 @@ typedef enum{TOKEN, DATA} Packet_Type;
 typedef struct _packet_ 
 {
   double arrive_time;
+  double transmit_time;
   Packet_Type type;
 } Packet, * Packet_Ptr;
 
@@ -31,7 +32,9 @@ typedef struct _simulation_run_data_
 {
   long int blip_counter;
   Token_Bucket_Controller_Ptr token_bucket_controller;
-  long int arrival_count;
+  long int packet_arrival_count;
+  long int token_arrival_count;
+  long int number_of_tokens_rejected;
   long int number_of_packets_lost;
   long int number_of_packets_transmitted;
   unsigned random_seed;
