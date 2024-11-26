@@ -87,7 +87,7 @@ void packet_arrival_event(Simulation_Run_Ptr simulation_run, void* dummy_ptr) {
       Packet_Ptr packet = fifoqueue_get(data->token_bucket_controller->data_bucket);
 
       //Consume one token to send data packet
-      fifoqueue_get(data->token_bucket_controller->token_bucket);
+      xfree(fifoqueue_get(data->token_bucket_controller->token_bucket));
 
       //Schedule transmission event for now
       schedule_transmission_event(simulation_run, now, (void*) packet);
