@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Define values to sweep
-declare -a B_T_MAX_vals=("1" "5" "10")
+declare -a B_T_MAX_vals=("1" "2" "3" "5" "7" "10")
 declare -a B_D_MAX_vals=($(seq 1 1 10))
 
 for B_T_MAX in "${B_T_MAX_vals[@]}"
