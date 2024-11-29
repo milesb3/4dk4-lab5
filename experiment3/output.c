@@ -1,27 +1,3 @@
-
-/*
- * Simulation_Run of the ALOHA Protocol
- * 
- * Copyright (C) 2014 Terence D. Todd Hamilton, Ontario, CANADA
- * todd@mcmaster.ca
- * 
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option)
- * any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- */
-
-/*******************************************************************************/
-
 #include <stdio.h>
 #include "simparameters.h"
 #include "main.h"
@@ -50,9 +26,11 @@ output_blip_to_screen(Simulation_Run_Ptr simulation_run)
 
     printf("%3.0f%% ", percentagedone);
 
-    printf("Successfully Xmtted Pkts  = %ld (Arrived Data Pkts = %ld) \r", 
+    printf("Successfully Xmtted Pkts  = %ld (Arrived Data Pkts = %ld ; Arrived Token Pkts = %ld ; Transmitted Bits = %ld) \r", 
 	   data->number_of_packets_transmitted, 
-	   data->packet_arrival_count);
+	   data->packet_arrival_count,
+     data->token_arrival_count,
+     data->bits_transmitted);
 
     fflush(stdout);
   }
@@ -66,7 +44,7 @@ void output_results(Simulation_Run_Ptr this_simulation_run, FILE* outfile)
 
   printf("\n\n");
   printf("Random Seed = %d \n", sim_data->random_seed);
-  printf("Packet Arrival Rate = %d \n", PACKET_ARRIVAL_RATE);
+  printf("Packet Arrival Rate = %.2f \n", PACKET_ARRIVAL_RATE);
   printf("T = %d \n", T);
   printf("B_T_MAX = %d \n", B_T_MAX);
   printf("B_D_MAX = %d \n", B_D_MAX);
@@ -79,10 +57,11 @@ void output_results(Simulation_Run_Ptr this_simulation_run, FILE* outfile)
 
   /* Calculate derived statistics */
   double packet_loss_rate = (double) sim_data->number_of_packets_lost / sim_data->packet_arrival_count;
-  double output_data_rate = (double) sim_data->number_of_packets_transmitted / simulation_run_get_time(this_simulation_run);
+  double output_data_rate = (double) sim_data->bits_transmitted / simulation_run_get_time(this_simulation_run);
+  //(from experiment 3a) double output_data_rate = (double) sim_data->number_of_packets_transmitted / simulation_run_get_time(this_simulation_run);
 
   /* Write results to outfile */
-  fprintf(outfile, "%d, %d, %d, %d, %d, %ld, %ld, %ld, %.3f, %.3f \n", 
+  fprintf(outfile, "%d, %.2f, %d, %d, %d, %ld, %ld, %ld, %.3f, %.3f \n", 
   	sim_data->random_seed,
     PACKET_ARRIVAL_RATE,
     T,

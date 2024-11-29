@@ -4,6 +4,9 @@
 #include "packet_transmission.h"
 #include "packet_arrival.h"
 
+/* Constant int array holding possible packet sizes in bits for experiment 3b */
+const unsigned int packet_sizes[5] = {5, 10, 15, 20, 25};
+
 /*******************************************************************************/
 
 long int schedule_token_arrival_event(Simulation_Run_Ptr simulation_run, Time event_time) {
@@ -73,6 +76,10 @@ void packet_arrival_event(Simulation_Run_Ptr simulation_run, void* dummy_ptr) {
     Packet_Ptr new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));
     new_packet->arrive_time = now;
     new_packet->type = DATA;
+
+    /* Determine size of data packet for experiment 3b */
+    new_packet->size = packet_sizes[(int) (uniform_generator() * 5)];
+
     fifoqueue_put(data->token_bucket_controller->data_bucket, new_packet);
   } 
   else {
@@ -80,6 +87,26 @@ void packet_arrival_event(Simulation_Run_Ptr simulation_run, void* dummy_ptr) {
     data->number_of_packets_lost++;
   }
 
+  /* Schedule the transmission event if n tokens are available for n bits in packet */
+  if (fifoqueue_size(data->token_bucket_controller->data_bucket) > 0) {
+    Packet_Ptr next_packet = (Packet_Ptr) fifoqueue_see_front(data->token_bucket_controller->data_bucket);
+    unsigned int n = next_packet->size;
+
+    if (fifoqueue_size(data->token_bucket_controller->token_bucket) >= n) {
+      //Remove next packet to transmit from data bucket
+      Packet_Ptr packet = fifoqueue_get(data->token_bucket_controller->data_bucket);
+
+      //Consume n tokens to send data packet
+      for (int i=0; i<n; i++) {
+        xfree(fifoqueue_get(data->token_bucket_controller->token_bucket));
+      }
+
+      //Schedule transmission event for now
+      schedule_transmission_event(simulation_run, now, (void*) packet);
+    }
+  }
+
+/* Schedule logic for experiment 3a
   //Schedule transmission event if data and token available
   if ((fifoqueue_size(data->token_bucket_controller->data_bucket) > 0)
     && (fifoqueue_size(data->token_bucket_controller->token_bucket) > 0)) {
@@ -92,6 +119,7 @@ void packet_arrival_event(Simulation_Run_Ptr simulation_run, void* dummy_ptr) {
       //Schedule transmission event for now
       schedule_transmission_event(simulation_run, now, (void*) packet);
   }
+*/
   
   /* Schedule the next data packet arrival */
   schedule_packet_arrival_event(simulation_run, 

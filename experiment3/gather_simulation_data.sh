@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Define variables
-outfile="experiment3a_all.csv"
+outfile="experiment3b_all.csv"
 data_folder="results"
 
 #Initialize outfile

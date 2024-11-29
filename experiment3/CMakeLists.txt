@@ -5,7 +5,7 @@
 
 # Define the project name
 #
-set(PROJECT_NAME "lab5_experiment3a")
+set(PROJECT_NAME "lab5_experiment3b")
 
 # Tell cmake the project name.
 #

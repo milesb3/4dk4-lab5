@@ -43,6 +43,7 @@ int main(void) {
         data.number_of_tokens_rejected = 0;
         data.number_of_packets_lost = 0;
         data.number_of_packets_transmitted = 0;
+        data.bits_transmitted = 0;
         data.random_seed = random_seed;
 
         /* Initialize token bucket controller */

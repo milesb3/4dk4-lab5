@@ -26,6 +26,7 @@ typedef struct _packet_
   double arrive_time;
   double transmit_time;
   Packet_Type type;
+  unsigned int size; //Size of packet in bits for experiment 3b
 } Packet, * Packet_Ptr;
 
 typedef struct _simulation_run_data_
@@ -34,6 +35,7 @@ typedef struct _simulation_run_data_
   Token_Bucket_Controller_Ptr token_bucket_controller;
   long int packet_arrival_count;
   long int token_arrival_count;
+  long int bits_transmitted; //For calculating average output data rate in experiment 3b
   long int number_of_tokens_rejected;
   long int number_of_packets_lost;
   long int number_of_packets_transmitted;
